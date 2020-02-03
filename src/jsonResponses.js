@@ -24,7 +24,33 @@ const getUsers = (request, response) => {
 };
 
 const addUser = (request, response, body) => {
+  const responseJSON = {
+    message: 'Name and age are both required',
+  };
 
+  // If both aren't provided, set id to missingParams, then send the response with 400 code
+  if (!body.name || !body.age) {
+    responseJSON.id = 'missingParams';
+    return respondJSON(request, response, 400, responseJSON);
+  }
+
+  let responseCode = 201; // created status code
+
+  if (users[body.name]) {
+    responseCode = 204; // update status code
+  } else {
+    users[body.name] = {};
+  }
+
+  users[body.name].name = body.name;
+  users[body.name].nage = body.age;
+
+  if (responseCode === 201) {
+    responseJSON.message = 'Created successfully';
+    return respondJSON(request, response, responseCode, responseJSON);
+  }
+
+  return respondJSONMeta(request, response, responseCode);
 };
 
 module.exports = {
